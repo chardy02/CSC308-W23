@@ -1,2 +1,6 @@
-package PACKAGE_NAME;public interface Shape {
+import java.awt.*;
+
+public interface Shape {
+    public Color color = null;
+    public void draw(Graphics g);
 }

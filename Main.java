@@ -3,10 +3,23 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Hashtable;
-
+/**
+ * CSC 308 Assignment 1 - Paint App
+ *
+ * Main class - Displays UI including buttons, frames, and color selector
+ * and DrawingBoard
+ * Extends JFrame and implements ActionListener
+ *
+ * @author Cameron Hardy
+ */
 public class Main extends JFrame implements ActionListener {
     DrawingBoard drawBoard;
 
+    /**
+     * Main function - run when the program is run
+     * Creates new instance of Main
+     * @param args - user arguments input, normally through commandline
+     */
     public static void main(String[] args) {
         Main main = new Main();
         main.setSize(500, 500);
@@ -14,9 +27,13 @@ public class Main extends JFrame implements ActionListener {
         main.setVisible(true);
     }
 
+    /**
+     * Constructor for Main object
+     * Contains all UI mentioned in description
+     * Mostly code copied from lecture slides, changed as little as possible
+     */
     public Main() {
         super("Paint App");
-
         // South
         JPanel southPanel = new JPanel();
         southPanel.setBackground(Color.CYAN);
@@ -24,7 +41,6 @@ public class Main extends JFrame implements ActionListener {
         JButton b2 = new JButton("Erase");
         southPanel.add(b1);
         southPanel.add(b2);
-
         // West
         JPanel westPanel = new JPanel();
         westPanel.setBackground(Color.PINK);
@@ -47,7 +63,7 @@ public class Main extends JFrame implements ActionListener {
         westPanel.add(arc);
         // Center
         JPanel centerPanel = new DrawingBoard();
-        centerPanel.setBackground(Color.GRAY);
+        centerPanel.setBackground(Color.CYAN);
         drawBoard = (DrawingBoard) centerPanel;
         // Frame
         BorderLayout layout = new BorderLayout();
@@ -63,14 +79,21 @@ public class Main extends JFrame implements ActionListener {
         b1.addActionListener(this);
         b2.addActionListener(this);
     }
+
+    /**
+     * Overridden function from ActionListener
+     * Is called when one of the UI buttons is interacted with
+     * Undos, Erases, changes color, or changes shape depending on the button pressed
+     * @param e - ActionEvent to be processed
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         switch(e.getActionCommand()) {
             case("Undo"):
-                System.out.println("Undoing last drawing");
+                drawBoard.undo();
                 break;
             case("Erase"):
-                System.out.println("Erasing DrawingBoard");
+                drawBoard.erase();
                 break;
             case("comboBoxChanged"):
                 drawBoard.selectColor("" + ((JComboBox) e.getSource()).getSelectedItem());

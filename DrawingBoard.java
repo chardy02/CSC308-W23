@@ -48,6 +48,7 @@ public class DrawingBoard extends JPanel implements MouseListener, MouseMotionLi
     /**
      * Creates an instance of DrawingBoard, extending and used in the place of
      * JPanel, allows user to draw shapes in varying colors
+     * Add mouse and mousemotion listeners
      */
     public DrawingBoard() {
         addMouseListener(this);

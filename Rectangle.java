@@ -50,6 +50,9 @@ public class Rectangle implements Shape {
      * @param g - Graphics object to be drawn to
      */
     public void outline(Graphics g) {
+        // Uses dx, dy, dw, dh as temporary parameters to draw the rectangle correctly
+        // If width is negative... mouse x is less than start x... change dx and dw
+        // If height is negative... mouse y is less than stary y... change dy and dh
         int dx, dy, dw, dh;
         if(w < 0) {
             dw = -w;
@@ -92,6 +95,7 @@ public class Rectangle implements Shape {
      * Rearranges coordinates if width or height are negative
      */
     public void rearrange() {
+        // Same as in outline, but permanent change to parameters
         int dx, dy, dh, dw;
         if(w < 0) {
             dw = -w;

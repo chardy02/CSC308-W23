@@ -4,6 +4,7 @@ import java.awt.event.*;
 import java.util.Hashtable;
 import java.util.ArrayList;
 import java.util.Observable;
+import java.util.Observer;
 
 /**
  * CSC 308 Assignment 1 - Paint App
@@ -14,9 +15,21 @@ import java.util.Observable;
  * @author Cameron Hardy
  */
 
-public class PointBoard extends JPanel, Obeserver implements MouseListener, MouseMotionListener {
-
-    public String shapeMode = "Rectangle";
+public class PointBoard extends JPanel implements MouseListener, MouseMotionListener, Observer {
+    /**
+     * @Field Processor - PointProcessor reference
+     */
+    private PointProcessor processor = PointProcessor.getRef();
+    /**
+     * @Field clusters - List of Array lists containing the point
+     * information for both clusters
+     */
+    private ArrayList<Point>[] clusters = new ArrayList[2];
+    /**
+     * @Field lines - Array list containing the point
+     * information for the connecting lines to be drawn
+     */
+    private ArrayList<Point> lines;
 
     /**
      * Creates an instance of PaintBoard
@@ -33,48 +46,33 @@ public class PointBoard extends JPanel, Obeserver implements MouseListener, Mous
      */
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+        ArrayList<Point> pts = processor.getPts();
+        for(Point p : pts) {
+            g.fillOval(p.x, p.y, 4, 4);
+        }
+        drawClusters(g);
+        drawLines(g);
+
+        repaint();
     }
-
-    /**
-     * Method called in Main class to update the mode
-     * @param _mode - Mode to toggle
-     */
-    public void updateMode(String _mode) {
-        mode = _mode;
-    }
-
-    /**
-     * Creates point at given mouse coordinates, adding to list of points
-     * @param e - MouseEvent to get mouse(x and y) position
-     */
-    public void placePoint(MouseEvent e) {
-
-    }
-
     /**
      * Method overridden from MouseListener, detects when user presses the mouse
      * @param e - MouseEvent to be passed through to subsequent functions
      */
     public void mousePressed(MouseEvent e) {
-        repaint();
+        processor.add(new Point(e.getX(), e.getY()));
     }
     /**
      * Method overridden from MouseListener, detects when user releases the mouse
      * @param e - MouseEvent to be passed through to subsequent functions
      */
-    public void mouseReleased(MouseEvent e) {
-        repaint();
-    }
-
-    @Override
-
-
+    public void mouseReleased(MouseEvent e) { }
     /**
      * Empty method required to implement
      * MouseListener interface.
      * @param e - MouseEvent processed
      */
-    public void mouseClicked(MouseEvent e) {}
+    public void mouseClicked(MouseEvent e) { }
     /**
      * Empty method required to implement
      * MouseListener interface.
@@ -97,7 +95,55 @@ public class PointBoard extends JPanel, Obeserver implements MouseListener, Mous
      * Method overridden from MouseMotionListener, detects when mouse is dragged
      * @param e - MouseEvent processed
      */
-    public void mouseDragged(MouseEvent e) {
+    public void mouseDragged(MouseEvent e) {}
 
+    /**
+     * Method to draw the colored points when the clustering box is checked
+     * @param g - Graphics object associated with the panel
+     */
+    public void drawClusters(Graphics g) {
+        if(clusters[0] == null) {
+            return;
+        }
+        g.setColor(Color.RED);
+        for(Point p : clusters[0]) {
+            g.fillOval(p.x, p.y, 5, 5);
+        }
+        g.setColor(Color.BLUE);
+        for(Point p : clusters[1]) {
+            g.fillOval(p.x, p.y, 5, 5);
+        }
+    }
+
+    /**
+     * Method to draw the connecting lines given by the nearest neighbor algorithm
+     * @param g - Graphics object associated with the panel
+     */
+    public void drawLines(Graphics g) {
+        if(lines == null) {
+            return;
+        }
+        g.setColor(Color.BLACK);
+        for(int i = 1; i < lines.size(); i++) {
+            g.drawLine(lines.get(i).x, lines.get(i).y, lines.get(i - 1).x, lines.get(i - 1).y);
+        }
+        g.drawLine(lines.get(0).x, lines.get(0).y, lines.get(lines.size() - 1).x, lines.get(lines.size() - 1).y);
+    }
+
+    /**
+     * Overridden update method to update the clusters or lines information
+     * Called when notifyObservers is used in PointProcessor
+     * @param o - Observable object which called update on this Observer
+     * @param arg - Object passed through the update call
+     */
+    @Override
+    public void update(Observable o, Object arg) {
+        PointInfo ptData = (PointInfo) arg;
+        if(ptData.type == "Cluster") {
+            clusters = ptData.data;
+        }
+        if(ptData.type == "Lines") {
+            lines = ptData.data[0];
+        }
     }
 }
